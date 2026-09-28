@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Opening… · Orbit</title>
+  <meta name="theme-color" content="#07080d" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="config.js"></script>
+  <style>
+    body { display: grid; place-items: center; min-height: 100dvh; padding: 24px 16px; }
+    .box { width: min(420px, 100%); border-radius: 28px; padding: 30px 22px; text-align: center; }
+    .box h1 { font-size: 22px; margin: 0 0 6px; word-break: break-word; }
+    .box p { margin: 0 0 22px; }
+    .box .btn { margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <div class="aurora" aria-hidden="true"></div>
+  <div class="box glass">
+    <div class="logo-lg"><span class="ring"></span><span class="core"></span></div>
+    <h1 id="t">Opening…</h1>
+    <p class="muted small" id="d"></p>
+    <a id="go" class="btn primary wide" hidden>Open</a>
+    <a id="web" class="btn ghost wide" hidden>Open in browser instead</a>
+    <a class="btn ghost wide" href="./">Back to Orbit</a>
+  </div>
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+    import { intentUrl, appFor, hostOf } from "./applink.js";
+
+    const q = new URLSearchParams(location.search);
+    const url = q.get("u") || "";
+    const id = q.get("id");
+    const dismiss = q.get("dismiss") === "1";
+    const $ = (s) => document.querySelector(s);
+
+    // 1. Mark this link's reminders as seen (uses the session already stored by the app)
+    if (id) {
+      try {
+        const C = window.ORBIT_CONFIG;
+        const sb = createClient(C.SUPABASE_URL, C.SUPABASE_ANON_KEY);
+        sb.from("orbit_links").update({ pending_count: 0 }).eq("id", id).then(() => {});
+      } catch {}
+    }
+
+    if (dismiss || !/^https?:\/\//i.test(url)) {
+      $("#t").textContent = dismiss ? "Dismissed" : "Nothing to open";
+      $("#d").textContent = dismiss ? "Reminder count reset." : "";
+    } else {
+      // 2. Hand off to the right app (Docs → Google Docs app, etc.) or the browser
+      const app = appFor(url);
+      const target = intentUrl(url);
+      $("#t").textContent = app ? `Opening in ${app.app}` : `Opening ${hostOf(url)}`;
+      $("#d").textContent = url;
+      $("#go").href = target;
+      $("#go").textContent = app ? `Open in ${app.app}` : "Open link";
+      $("#web").href = url;
+      location.replace(target);
+      // If Android blocked the automatic hand-off, show the one-tap buttons
+      setTimeout(() => { $("#go").hidden = false; if (target !== url) $("#web").hidden = false; }, 900);
+    }
+  </script>
+</body>
+</html>
