@@ -57,7 +57,7 @@ do $$ begin
 exception when duplicate_object then null; end $$;
 
 -- 6. The heartbeat: every minute, ask the send-due function to fire whatever is due.
---    Project URL and cron secret are pre-filled; if you use a different Supabase project, change the URL below.
+--    The ready-to-run version with your secret filled in is in SECRETS-do-not-commit.txt (not in this repo).
 create extension if not exists pg_cron;
 create extension if not exists pg_net;
 
@@ -70,7 +70,7 @@ select cron.schedule(
   $cron$
   select net.http_post(
     url     := 'https://semwmaqblicvgxmxhwqm.supabase.co/functions/v1/send-due',
-    headers := jsonb_build_object('Content-Type', 'application/json', 'x-orbit-cron', 'b064c9ff784a1ac7e248cc9e29a75a8eef7a8c3a6a18c3fe'),
+    headers := jsonb_build_object('Content-Type', 'application/json', 'x-orbit-cron', 'PASTE-ORBIT_CRON_SECRET-HERE'),
     body    := '{}'::jsonb,
     timeout_milliseconds := 25000
   );

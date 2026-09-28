@@ -18,7 +18,7 @@ Hosting: `https://sumanpresi.github.io/Orbit/` · Backend: your existing **Notew
 
 ## Step 1 — Supabase (≈10 min)
 
-1. **Anon key**: Supabase → *Project Settings → API* → copy the `anon public` key into `config.js` (`SUPABASE_ANON_KEY`).
+1. **Anon key**: already filled into `config.js` — skip.
 2. **Database**: *SQL Editor → New query* → paste the SQL block from `SECRETS-do-not-commit.txt` (same as `supabase/schema.sql`, with your cron secret filled in) → **Run**.
    This creates the tables, security rules, live sync, and the once-a-minute scheduler.
 3. **Edge function**: *Edge Functions → Deploy a new function → Via editor*
