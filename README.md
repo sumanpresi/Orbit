@@ -12,29 +12,29 @@ GitHub Pages (the app)  ──►  Supabase (your data + login, synced live)
                            Web Push  ──►  Z Fold 8 / any device
 ```
 
-Hosting: `https://sumanpresi.github.io/orbit/` · Backend: your existing **Notewire** Supabase project (all tables are prefixed `orbit_`, so nothing clashes).
+Hosting: `https://sumanpresi.github.io/Orbit/` · Backend: your existing **Notewire** Supabase project (all tables are prefixed `orbit_`, so nothing clashes).
 
 ---
 
 ## Step 1 — Supabase (≈10 min)
 
 1. **Anon key**: Supabase → *Project Settings → API* → copy the `anon public` key into `config.js` (`SUPABASE_ANON_KEY`).
-2. **Database**: *SQL Editor → New query* → paste all of `supabase/schema.sql` → **Run**.
+2. **Database**: *SQL Editor → New query* → paste the SQL block from `SECRETS-do-not-commit.txt` (same as `supabase/schema.sql`, with your cron secret filled in) → **Run**.
    This creates the tables, security rules, live sync, and the once-a-minute scheduler.
 3. **Edge function**: *Edge Functions → Deploy a new function → Via editor*
    - Name: `send-due`
    - Paste the whole of `supabase/functions/send-due/index.ts`, deploy.
    - Open the function's settings and **turn OFF JWT verification** ("Verify JWT" / "Enforce JWT") (the function checks its own secret).
 4. **Secrets**: *Edge Functions → Secrets* → add the four values from `SECRETS-do-not-commit.txt`.
-5. **Login redirect**: *Authentication → URL Configuration* → add `https://sumanpresi.github.io/orbit/` to **Redirect URLs**.
+5. **Login redirect**: *Authentication → URL Configuration* → add `https://sumanpresi.github.io/Orbit/` to **Redirect URLs**.
    Google sign-in is already enabled on this project for Notewire, so it works here too. Email magic-link works as a fallback.
 
 ## Step 2 — GitHub Pages (≈3 min)
 
-1. Create a repo named **`orbit`** under `sumanpresi`.
+1. Create a repo named **`Orbit`** under `sumanpresi`.
 2. Upload everything in this folder **except** `SECRETS-do-not-commit.txt`.
-3. *Settings → Pages →* Source: **Deploy from a branch**, branch `main`, folder `/ (root)`.
-4. Wait a minute, then open `https://sumanpresi.github.io/orbit/`.
+3. *Settings → Pages →* (repo must be **Public** on the free plan) Source: **Deploy from a branch**, branch `main`, folder `/ (root)`.
+4. Wait a minute, then open `https://sumanpresi.github.io/Orbit/`.
 
 ## Step 3 — Install on the Z Fold 8
 
